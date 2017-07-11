@@ -1,4 +1,4 @@
-package constroller;
+package controller;
 
 public class SearchController {
 
