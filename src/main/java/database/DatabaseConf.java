@@ -30,7 +30,7 @@ public class DatabaseConf {
 			stmt.executeUpdate(sql);
 			*/
 			
-			String sql = "CREATE TABLE result" + 
+			String sql; /* = "CREATE TABLE result" + 
 					"(resultId INTEGER not NULL, " + 
 					"first VARCHAR(255), "+
 					"last VARCHAR(255), " + 
@@ -38,7 +38,7 @@ public class DatabaseConf {
 					"PRIMARY KEY (resultId))";
 			
 			stmt.executeUpdate(sql);
-			
+			*/
 
 			sql = "CREATE TABLE search" + 
 					"(searchId INTEGER not NULL, " + 
