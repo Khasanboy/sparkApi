@@ -1,6 +1,7 @@
 package model;
 
 import java.util.Date;
+import java.util.List;
 
 public class Search {
 	
@@ -12,14 +13,9 @@ public class Search {
 	
 	private Date created;
 	
-	private Result result;
+	private List<Result> result;
 
-	public Search() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
-	public Search(Long id, String query, String status, Date created, Result result) {
+	public Search(Long id, String query, String status, Date created, List<Result> result) {
 		super();
 		Id = id;
 		this.query = query;
@@ -60,15 +56,13 @@ public class Search {
 		this.created = created;
 	}
 
-	public Result getResult() {
+	public List<Result> getResult() {
 		return result;
 	}
 
-	public void setResult(Result result) {
+	public void setResult(List<Result> result) {
 		this.result = result;
-	}
-	
-	
+	}	
 	
 	
 

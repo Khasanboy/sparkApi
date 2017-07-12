@@ -25,40 +25,44 @@ public class DatabaseConf {
 
 			System.out.println("Creating table in given database...");
 			stmt = conn.createStatement();
-			/*
-			String sql = "DROP TABLE result";
-			stmt.executeUpdate(sql);
-			*/
+		
+			//String sql = "DROP SCHEMA searchAPI";
+			//stmt.executeUpdate(sql);
 			
-			String sql; /* = "CREATE TABLE result" + 
-					"(resultId INTEGER not NULL, " + 
-					"first VARCHAR(255), "+
-					"last VARCHAR(255), " + 
-					"age INTEGER, " + 
-					"PRIMARY KEY (resultId))";
+			
+			
+			String sql = "CREATE SCHEMA searchAPI";
+			stmt.executeUpdate(sql);
+			
+			sql= "CREATE TABLE searchAPI.resultFromSearch" + 
+					"(resultFromSearchId  INTEGER auto_increment, " + 
+					"firstName VARCHAR(255), "+
+					"lastName VARCHAR(255), " + 
+					"ageName INTEGER)";
 			
 			stmt.executeUpdate(sql);
-			*/
+			
+			
 
-			sql = "CREATE TABLE search" + 
-					"(searchId INTEGER not NULL, " + 
-					"query VARCHAR(255), " + 
-					"status VARCHAR(255), "+ 
-					"created DATE, " + 
-					"resultId Result " + 
-					"PRIMARY KEY ( searchId ))" + 
-					"FOREIGN KEY (resultId)"+ 
-					"REFERENCES public.result(resultId))";
+			sql = "CREATE TABLE searchAPI.searchResult" + 
+					"(searchResultId INTEGER auto_increment, " + 
+					"queryString VARCHAR(255), " + 
+					"statusString VARCHAR(255), "+ 
+					"createdDate DATE, " + 
+					"resultFromSearchId ARRAY)" ;
+					//"FOREIGN KEY (resultFromSearchId) "+ 
+					//"REFERENCES searchAPI.resultFromSearch(resultFromSearchId))";
 			
 			stmt.executeUpdate(sql);
 			
-			sql = "CREATE TABLE user" + 
-					"(userId INTEGER not NULL, " + 
+			
+			sql = "CREATE TABLE searchAPI.userInfo" + 
+					"(userInfoId INTEGER auto_increment, " + 
 					" username VARCHAR(255), "+ 
 					" password VARCHAR(255), " + 
-					" PRIMARY KEY (userId))"+
-					"FOREIGN KEY (searchId)"+ 
-					"REFERENCES public.search(searchId))";;
+					"searchResultId ARRAY)";
+					//"FOREIGN KEY (searchResultId) "+ 
+					//"REFERENCES searchAPI.searchResult(searchResultId))";
 			stmt.executeUpdate(sql);
 			
 			

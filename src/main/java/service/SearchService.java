@@ -1,74 +1,119 @@
 package service;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Date;
 import java.util.List;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import model.Result;
 import model.Search;
 
 public class SearchService {
-	
-	// JDBC driver name and database URL 
+	 
 	   static final String JDBC_DRIVER = "org.h2.Driver";   
 	   static final String DB_URL = "jdbc:h2:~/test";  
-	   
-	   //  Database credentials 
 	   static final String USER = "sa"; 
 	   static final String PASS = ""; 
 	   
 	   Connection conn = null; 
 	   Statement stmt = null; 
+	   
 	
+	@SuppressWarnings("null")
 	public List<Search> getAllSearch(){
+		List<Search> list = null;
 		
 		 try { 
-	         // STEP 1: Register JDBC driver 
+			 
 	         Class.forName(JDBC_DRIVER); 
 	             
-	         //STEP 2: Open a connection 
 	         System.out.println("Connecting to database..."); 
 	         conn = DriverManager.getConnection(DB_URL,USER,PASS);  
+	         stmt = conn.createStatement();
 	         
-	         //STEP 3: Execute a query 
-	         System.out.println("Creating table in given database..."); 
-	         stmt = conn.createStatement(); 
-	         
-	         
-	         System.out.println("Created table in given database..."); 
+	        // String insert = "Insert into searchAPI.searchResult ('lalala', 'Completed', 12.07.2017)";
+	         //stmt.executeQuery(insert);
 	          
-	         String sql = "Select *  Registration7 " + "VALUES (100, 'Zara', 'Ali', 18)"; 
+	         String sql = "Select * FROM searchAPI.searchResult"; 
 	         
-	         stmt.executeUpdate(sql); 
-	         System.out.println("Inserted records into the table...");
+	         ResultSet rs = stmt.executeQuery(sql); 
+	         while(rs.next()){
+	        	 
+	        	 Long id  = (long) rs.getInt("searchResultId"); 
+	             String queryString = rs.getString("queryString"); 
+	             String statusString = rs.getString("statusString"); 
+	             Date createdDate = rs.getDate("createdDate");
+	             
+	             @SuppressWarnings("unchecked")
+				List<Result>allResult = (List<Result>) rs.getArray("resultFromSearchId"); 
+	             
+	             Search newSearch = new Search(id, queryString, statusString, createdDate, allResult);
+	             
+	             list.add(newSearch);
+	        	 
+	         }
 	         
-	         // STEP 4: Clean-up environment 
+	         System.out.println(list);
 	         stmt.close(); 
 	         conn.close(); 
+	        
 	      } catch(SQLException se) { 
-	         //Handle errors for JDBC 
+	          
 	         se.printStackTrace(); 
 	      } catch(Exception e) { 
-	         //Handle errors for Class.forName 
+	          
 	         e.printStackTrace(); 
 	      } finally { 
-	         //finally block used to close resources 
+	          
 	         try{ 
 	            if(stmt!=null) stmt.close(); 
 	         } catch(SQLException se2) { 
-	         } // nothing we can do 
+	         }  
 	         try { 
 	            if(conn!=null) conn.close(); 
 	         } catch(SQLException se){ 
 	            se.printStackTrace(); 
-	         } //end finally try 
-	      } //end try 
-	      System.out.println("Goodbye!");
+	         } 
+	      } 
+		 return list;
+	}
 	
 	
+	public Search createSearch(String quesryString, String user) throws UnsupportedEncodingException, IOException{
+		
+		System.out.println("I am here");
+		
+		String google = "http://www.google.com/search?q=";
+		String charset = "UTF-8";
+		String userAgent = "ExampleBot 1.0 (+http://example.com/bot)"; // Change this to your company's name and bot homepage!
+
+		Elements links = Jsoup.connect(google + URLEncoder.encode(quesryString, charset)).userAgent(userAgent).get().select(".g>.r>a");
+		String title = null;
+		
+		for (Element link : links) {
+		    title = link.text();
+		    break;
+		    
+		    
+		}
+		System.out.println("Title: " + title);
+		
 		
 		return null;
+		
+		
+		
+		
 		
 	}
 
