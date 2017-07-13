@@ -8,15 +8,14 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-
 import com.google.gson.Gson;
-
 import model.Result;
 import model.Search;
 import model.User;
@@ -27,19 +26,17 @@ public class SearchService {
 	static final String DB_URL = "jdbc:h2:~/test";
 	static final String USER = "sa";
 	static final String PASS = "";
-
+	static final SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd hh:mm:ss");
+	static final Gson g = new Gson();
 	Connection conn = null;
 	Statement stmt = null;
 
-	@SuppressWarnings("null")
-	public List<Search> getAllSearch() {
-		List<Search> list = null;
+	public ArrayList<Search> getAllSearch() {
+		ArrayList<Search> list = new ArrayList<>();
 
 		try {
 
 			Class.forName(JDBC_DRIVER);
-
-			System.out.println("Connecting to database...");
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 			stmt = conn.createStatement();
 
@@ -48,26 +45,39 @@ public class SearchService {
 			ResultSet rs = stmt.executeQuery(sql);
 			while (rs.next()) {
 
-				Long id = (long) rs.getInt("searchResultId");
-				String queryString = rs.getString("queryString");
-				String statusString = rs.getString("statusString");
-				Date createdDate = rs.getDate("createdDate");
-
-				@SuppressWarnings("unchecked")
-				List<Result> allResult = (List<Result>) rs.getArray("resultFromSearchId");
-
-				Search newSearch = new Search(id, queryString, statusString, createdDate, allResult);
-
-				list.add(newSearch);
+				Search newSearch = new Search();
+				
+				newSearch.setId((long) rs.getInt("searchResultId"));
+				newSearch.setQuery(rs.getString("queryString"));
+				newSearch.setStatus(rs.getString("statusString"));
+				String createdDateString = rs.getString("createdDate");
+				Date createdDate = null; 
+				try {
+					createdDate = ft.parse(createdDateString);
+				} catch (ParseException e) {
+					System.out.println("Parse error");
+				    e.printStackTrace();
+				}
+				
+				newSearch.setCreated(createdDate);
+				newSearch.setResult(new Result(rs.getString("google"), rs.getString("yandex")));
+				newSearch.setUserId((long)rs.getInt("userInfoId"));
+				
+				if(newSearch!= null)
+					list.add(newSearch);
 
 			}
 
-			System.out.println(list);
 			stmt.close();
 			conn.close();
 
-		} catch (Exception se) {
+		}catch(NullPointerException ex){
+			System.out.println(ex);
+		}
+		
+		catch (Exception se) {
 			se.printStackTrace();
+			
 		} finally {
 
 			try {
@@ -82,7 +92,75 @@ public class SearchService {
 		return list;
 	}
 	
-	
+	public ArrayList<Search> getAllSearchByUserName(String username) {
+		ArrayList<Search> list = new ArrayList<>();
+
+		try {
+
+			Class.forName(JDBC_DRIVER);
+			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			stmt = conn.createStatement();
+			String sql="";
+			
+			sql = "Select * FROM searchAPI.userInfo where username = '"+username+"'";
+			ResultSet foundUserResult = stmt.executeQuery(sql);
+			
+			if(foundUserResult.next()){
+				int userId = foundUserResult.getInt("userInfoId");
+				
+				sql = "Select * FROM searchAPI.searchResult where userInfoId = "+userId;
+				ResultSet foundSearchResult = stmt.executeQuery(sql);
+				
+				while (foundSearchResult.next()) {
+
+					Search newSearch = new Search();
+					
+					newSearch.setId((long) foundSearchResult.getInt("searchResultId"));
+					newSearch.setQuery(foundSearchResult.getString("queryString"));
+					newSearch.setStatus(foundSearchResult.getString("statusString"));
+					String createdDateString = foundSearchResult.getString("createdDate");
+					Date createdDate = null; 
+					try {
+						createdDate = ft.parse(createdDateString);
+					} catch (ParseException e) {
+						System.out.println("Parse error");
+					    e.printStackTrace();
+					}
+					
+					newSearch.setCreated(createdDate);
+					newSearch.setResult(new Result(foundSearchResult.getString("google"), foundSearchResult.getString("yandex")));
+					newSearch.setUserId((long)foundSearchResult.getInt("userInfoId"));
+					
+					if(newSearch!= null)
+						list.add(newSearch);
+
+				}
+				
+			}
+
+			stmt.close();
+			conn.close();
+
+		}catch(NullPointerException ex){
+			System.out.println(ex);
+		}
+		
+		catch (Exception se) {
+			se.printStackTrace();
+			
+		} finally {
+
+			try {
+				if (stmt != null)
+					stmt.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException se2) {
+				se2.printStackTrace();
+			}
+		}
+		return list;
+	}	
 
 	public Search createSearch(String quesryString, String user) throws UnsupportedEncodingException, IOException {
 
@@ -102,7 +180,6 @@ public class SearchService {
 		
 		System.out.println("google Title: " + googleTitle);	
 		
-		
 		String yandex = "https://yandex.ru/search/?text=";
 
 		Elements yandexlink = Jsoup.connect(yandex + URLEncoder.encode(quesryString, charset)).userAgent(userAgent).get()
@@ -118,8 +195,6 @@ public class SearchService {
 		
 		System.out.println("yandex Title: " + yandexTitle);	
 		
-		
-
 		try {
 
 			Class.forName(JDBC_DRIVER);
@@ -129,61 +204,26 @@ public class SearchService {
 			stmt = conn.createStatement();
 			String sql;
 			
-			sql = "INSERT INTO searchAPI.resultFromSearch (google, yandex) VALUES ('"+googleTitle+"', '"+yandexTitle+"')";
-			int resultId = stmt.executeUpdate(sql);
-			
-			 Date dNow = new Date( );
-		     SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd hh:mm:ss");
-			
-			sql = "INSERT INTO searchAPI.searchResult (queryString, statusString, createdDate, resultFromSearchId) VALUES ('"+quesryString+"', 'COMPLETED', '"+ft.format(dNow)+"', "+resultId+")";
-			int searchResultId = stmt.executeUpdate(sql);
-			
 			System.out.println(user);
-
-			Gson g = new Gson();
+			
 			User newUser = g.fromJson(user, User.class);
 			
-			System.out.println(newUser.getId() + newUser.getUserName() + newUser.getPassword());
+			System.out.println(newUser.getId() + newUser.getUsername() + newUser.getPassword());
 			
 			
 			sql = "Select * FROM searchAPI.userInfo where userInfoId = "+newUser.getId();
 			ResultSet foundUserResult = stmt.executeQuery(sql);
 			
 			if(!foundUserResult.next()){
-				System.out.println("Inside");
-				int array[] = {searchResultId};
-				sql = "INSERT INTO searchAPI.userInfo (username, password, searchResultId) VALUES ('"+newUser.getUserName()+"', '"+newUser.getPassword()+"', '"+ array+"')";
-				int userone = stmt.executeUpdate(sql);
-			}
-			else{
-				while (foundUserResult.next()) {
-					/*
-					int array[] = foundUserResult
-
-					Long id = (long) rs.getInt("searchResultId");
-					String queryString = rs.getString("queryString");
-					String statusString = rs.getString("statusString");
-					Date createdDate = rs.getDate("createdDate");
-
-					@SuppressWarnings("unchecked")
-					List<Result> allResult = (List<Result>) rs.getArray("resultFromSearchId");
-
-					Search newSearch = new Search(id, queryString, statusString, createdDate, allResult);
-
-					list.add(newSearch);
-					*/
-
-				}
-				
+				sql = "INSERT INTO searchAPI.userInfo (username, password) VALUES ('"+newUser.getUsername()+"', '"+newUser.getPassword()+"')";
+				stmt.executeUpdate(sql);
 			}
 			
-			//foundUserResult.next();
-			//User foundUser = (User) foundUserResult.getObject(0);
+			 Date dNow = new Date( );
+		    
 			
-			
-			
-			
-
+			sql = "INSERT INTO searchAPI.searchResult (queryString, statusString, createdDate, google, yandex, userInfoId) VALUES ('"+quesryString+"', 'COMPLETED', '"+ft.format(dNow)+"', '"+googleTitle+"','"+yandexTitle+"', "+newUser.getId()+")";
+			stmt.executeUpdate(sql);
 			
 			stmt.close();
 			conn.close();
@@ -205,5 +245,40 @@ public class SearchService {
 		return null;
 
 	}
+	
+	public String deleteSearch(String id) {
+		
+		try {
+			Class.forName(JDBC_DRIVER);
+			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			stmt = conn.createStatement();
+
+			String sql = "DELETE FROM searchAPI.searchResult WHERE searchResultId = " + new Integer(id);
+			stmt.execute(sql);
+			
+			stmt.close();
+			conn.close();
+
+		}catch(NullPointerException ex){
+			System.out.println(ex);
+		}
+		
+		catch (Exception se) {
+			se.printStackTrace();
+			
+		} finally {
+
+			try {
+				if (stmt != null)
+					stmt.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException se2) {
+				se2.printStackTrace();
+			}
+		}
+		return "Deleted";
+	}
+	
 
 }

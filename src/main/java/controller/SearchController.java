@@ -14,6 +14,10 @@ public class SearchController {
 				req.queryParams("q"),
 				req.queryParams("user")
 		), common.JsonUtil.json());
+		
+		get("/searches", (req, res) -> searchService.getAllSearchByUserName(req.queryParams("q")), common.JsonUtil.json());
+		
+		delete("/search", (req, res) -> searchService.deleteSearch(req.queryParams("id")));
 	}
 
 }

@@ -1,11 +1,10 @@
 package model;
 
 import java.util.Date;
-import java.util.List;
 
 public class Search {
 	
-	private Long Id;
+	private Long id;
 	
 	private String query;
 	
@@ -13,23 +12,34 @@ public class Search {
 	
 	private Date created;
 	
-	private List<Result> result;
-
-	public Search(Long id, String query, String status, Date created, List<Result> result) {
+	private Result result;
+	
+	private transient Long userId;
+	
+	public Search() {
 		super();
-		Id = id;
+	}
+
+	
+
+	public Search(Long id, String query, String status, Date created, Result result, Long userId) {
+		super();
+		this.id = id;
 		this.query = query;
 		this.status = status;
 		this.created = created;
 		this.result = result;
+		this.userId = userId;
 	}
 
+
+
 	public Long getId() {
-		return Id;
+		return id;
 	}
 
 	public void setId(Long id) {
-		Id = id;
+		this.id = id;
 	}
 
 	public String getQuery() {
@@ -56,14 +66,20 @@ public class Search {
 		this.created = created;
 	}
 
-	public List<Result> getResult() {
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+
+	public Result getResult() {
 		return result;
 	}
 
-	public void setResult(List<Result> result) {
+	public void setResult(Result result) {
 		this.result = result;
-	}	
-	
-	
+	}
 
 }

@@ -29,61 +29,31 @@ public class DatabaseConf {
 			//String sql = "DROP SCHEMA searchAPI";
 			//stmt.executeUpdate(sql);
 			
-			
 			String sql = "CREATE SCHEMA searchAPI";
 			stmt.executeUpdate(sql);
 			
-			sql= "CREATE TABLE searchAPI.resultFromSearch" + 
-					"(resultFromSearchId INTEGER auto_increment, "
-					+ "google VARCHAR(255), "+
-					"yandex VARCHAR(255))";
+			sql = "CREATE TABLE searchAPI.userInfo" + 
+					"(userInfoId INTEGER auto_increment, " + 
+					" username VARCHAR(255), "+ 
+					" password VARCHAR(255))";
 			
 			stmt.executeUpdate(sql);
-			
 
 			sql = "CREATE TABLE searchAPI.searchResult" + 
 					"(searchResultId INTEGER auto_increment, " + 
 					"queryString VARCHAR(255), " + 
 					"statusString VARCHAR(255), "+ 
 					"createdDate VARCHAR(255), " + 
-					"resultFromSearchId INTEGER, " +
-					"FOREIGN KEY (resultFromSearchId) "+ 
-					"REFERENCES searchAPI.resultFromSearch(resultFromSearchId))";
+					"google VARCHAR(255), " +
+					"yandex VARCHAR(255), " +
+					"userInfoId INTEGER, "+
+					"FOREIGN KEY (userInfoId) "+ 
+					"REFERENCES searchAPI.userInfo(userInfoId))";
 			
-			stmt.executeUpdate(sql);
+			stmt.executeUpdate(sql);		
 			
-			
-			sql = "CREATE TABLE searchAPI.userInfo" + 
-					"(userInfoId INTEGER auto_increment, " + 
-					" username VARCHAR(255), "+ 
-					" password VARCHAR(255), " + 
-					"searchResultId ARRAY)";
-					//"FOREIGN KEY (searchResultId) "+ 
-					//"REFERENCES searchAPI.searchResult(searchResultId))";
-			stmt.executeUpdate(sql);
-			
-			
-
 			System.out.println("Created table in given database...");
 
-			/*
-			 * String sql = "INSERT INTO Registration7 " +
-			 * "VALUES (100, 'Zara', 'Ali', 18)";
-			 * 
-			 * stmt.executeUpdate(sql); sql = "INSERT INTO Registration7 " +
-			 * "VALUES (101, 'Mahnaz', 'Fatma', 25)";
-			 * 
-			 * stmt.executeUpdate(sql); sql = "INSERT INTO Registration7 " +
-			 * "VALUES (102, 'Zaid', 'Khan', 30)";
-			 * 
-			 * stmt.executeUpdate(sql); sql = "INSERT INTO Registration7 " +
-			 * "VALUES(103, 'Sumit', 'Mittal', 28)";
-			 * 
-			 * stmt.executeUpdate(sql);
-			 * System.out.println("Inserted records into the table...");
-			 * 
-			 */
-			// STEP 4: Clean-up environment
 			stmt.close();
 			conn.close();
 		} catch (SQLException se) {
