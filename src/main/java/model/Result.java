@@ -2,22 +2,31 @@ package model;
 
 public class Result {
 	
+	private Long id;
+	
 	private String google;
 	
 	private String yandex;
-	
-	
 
-	public Result() {
+	public Result(Long id, String google, String yandex) {
 		super();
-		// TODO Auto-generated constructor stub
-	}
-
-	public Result(String google, String yandex) {
-		super();
+		this.id = id;
 		this.google = google;
 		this.yandex = yandex;
 	}
+	
+	
+
+	public Long getId() {
+		return id;
+	}
+
+
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
 
 	public String getGoogle() {
 		return google;

@@ -2,39 +2,34 @@ package model;
 
 public class User {
 	
-	private Long Id;
+	private Long id;
 	
-	private String userName;
+	private String username;
 	
 	private String password;
 	
 
-	public User() {
+	public User(Long id, String username, String password) {
 		super();
-		// TODO Auto-generated constructor stub
-	}
-
-	public User(Long id, String userName, String password) {
-		super();
-		Id = id;
-		this.userName = userName;
+		this.id = id;
+		this.username = username;
 		this.password = password;
 	}
 
 	public Long getId() {
-		return Id;
+		return id;
 	}
 
 	public void setId(Long id) {
-		Id = id;
+		this.id = id;
 	}
 
 	public String getUserName() {
-		return userName;
+		return username;
 	}
 
 	public void setUserName(String userName) {
-		this.userName = userName;
+		this.username = userName;
 	}
 
 	public String getPassword() {

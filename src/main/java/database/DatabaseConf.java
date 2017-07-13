@@ -30,28 +30,25 @@ public class DatabaseConf {
 			//stmt.executeUpdate(sql);
 			
 			
-			
 			String sql = "CREATE SCHEMA searchAPI";
 			stmt.executeUpdate(sql);
 			
 			sql= "CREATE TABLE searchAPI.resultFromSearch" + 
-					"(resultFromSearchId  INTEGER auto_increment, " + 
-					"firstName VARCHAR(255), "+
-					"lastName VARCHAR(255), " + 
-					"ageName INTEGER)";
+					"(resultFromSearchId INTEGER auto_increment, "
+					+ "google VARCHAR(255), "+
+					"yandex VARCHAR(255))";
 			
 			stmt.executeUpdate(sql);
-			
 			
 
 			sql = "CREATE TABLE searchAPI.searchResult" + 
 					"(searchResultId INTEGER auto_increment, " + 
 					"queryString VARCHAR(255), " + 
 					"statusString VARCHAR(255), "+ 
-					"createdDate DATE, " + 
-					"resultFromSearchId ARRAY)" ;
-					//"FOREIGN KEY (resultFromSearchId) "+ 
-					//"REFERENCES searchAPI.resultFromSearch(resultFromSearchId))";
+					"createdDate VARCHAR(255), " + 
+					"resultFromSearchId INTEGER, " +
+					"FOREIGN KEY (resultFromSearchId) "+ 
+					"REFERENCES searchAPI.resultFromSearch(resultFromSearchId))";
 			
 			stmt.executeUpdate(sql);
 			
