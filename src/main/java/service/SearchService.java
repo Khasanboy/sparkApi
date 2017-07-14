@@ -247,13 +247,26 @@ public class SearchService {
 	
 	public String deleteSearch(String id) {
 		
+		String deleted ="";
+		
 		try {
 			Class.forName(JDBC_DRIVER);
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 			stmt = conn.createStatement();
 
-			String sql = "DELETE FROM searchAPI.searchResult WHERE searchResultId = " + new Integer(id);
-			stmt.execute(sql);
+			String sql;
+			
+			sql = "SELECT * FROM searchAPI.searchResult WHERE searchResultId = " + new Integer(id);
+			ResultSet found = stmt.executeQuery(sql);
+			
+			if(found.next()){
+				sql= "DELETE FROM searchAPI.searchResult WHERE searchResultId = " + new Integer(id);
+				stmt.execute(sql);
+				deleted = "Search with id = "+id+" is deleted";
+			}
+			else{
+				deleted = "Search with id = "+id+" is not found";
+			}
 			
 			stmt.close();
 			conn.close();
@@ -276,7 +289,7 @@ public class SearchService {
 				se2.printStackTrace();
 			}
 		}
-		return "Deleted";
+		return deleted;
 	}
 	
 
