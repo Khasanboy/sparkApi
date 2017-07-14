@@ -63,8 +63,7 @@ public class SearchService {
 				newSearch.setResult(new Result(rs.getString("google"), rs.getString("yandex")));
 				newSearch.setUserId((long)rs.getInt("userInfoId"));
 				
-				if(newSearch!= null)
-					list.add(newSearch);
+				list.add(newSearch);
 
 			}
 
