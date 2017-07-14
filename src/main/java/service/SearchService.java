@@ -41,7 +41,7 @@ public class SearchService {
 
 	public SearchService() {
 		this.engines.add(new SearchEngine("google", "http://www.google.com/search?q=", ".g>.r>a"));
-		this.engines.add(new SearchEngine("yandex", "https://yandex.ru/search/?text=", "b-serp-item__title-link"));
+		this.engines.add(new SearchEngine("yandex", "https://yandex.ru/search/?text=", "a.serp-item__title-link"));
 
 		for (int i = 0; i < this.engines.size(); i++) {
 
