@@ -1,6 +1,7 @@
 package controller;
 
 import static spark.Spark.*;
+
 import service.SearchService;
 
 
@@ -9,7 +10,7 @@ public class SearchController {
 	
 	public SearchController(final SearchService searchService){
 		
-		get("/searches", (req, res) -> searchService.getAllSearchByUserName(req.queryParams("q")), common.JsonUtil.json());
+		get("/searches", (req, res) ->req.queryParams("q") == null ? common.JsonUtil.toJson(searchService.getAllSearch()) : common.JsonUtil.toJson(searchService.getAllSearchByUserName(req.queryParams("q"))));
 		
 		get("/searches", (req, res) -> searchService.getAllSearch(), common.JsonUtil.json());
 		

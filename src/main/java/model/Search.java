@@ -1,6 +1,7 @@
 package model;
 
 import java.util.Date;
+import java.util.HashMap;
 
 public class Search {
 	
@@ -12,7 +13,7 @@ public class Search {
 	
 	private Date created;
 	
-	private Result result;
+	private HashMap<String, String> result;
 	
 	private transient Long userId;
 	
@@ -22,7 +23,7 @@ public class Search {
 
 	
 
-	public Search(Long id, String query, String status, Date created, Result result, Long userId) {
+	public Search(Long id, String query, String status, Date created, HashMap<String, String> result, Long userId) {
 		super();
 		this.id = id;
 		this.query = query;
@@ -74,12 +75,17 @@ public class Search {
 		this.userId = userId;
 	}
 
-	public Result getResult() {
+
+	public HashMap<String, String> getResult() {
 		return result;
 	}
 
-	public void setResult(Result result) {
+
+
+	public void setResult(HashMap<String, String> result) {
 		this.result = result;
 	}
+
+	
 
 }

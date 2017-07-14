@@ -44,8 +44,8 @@ public class DatabaseConf {
 					"queryString VARCHAR(255), " + 
 					"statusString VARCHAR(255), "+ 
 					"createdDate VARCHAR(255), " + 
-					"google VARCHAR(255), " +
-					"yandex VARCHAR(255), " +
+					//"google VARCHAR(255), " +
+					//"yandex VARCHAR(255), " +
 					"userInfoId INTEGER, "+
 					"FOREIGN KEY (userInfoId) "+ 
 					"REFERENCES searchAPI.userInfo(userInfoId))";
